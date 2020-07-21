@@ -903,7 +903,7 @@ Ver_Pckg_Tools() {
                  	then
                  		echo "" > /dev/null
                  else
-                 		Pixiewps_Version="1"
+                 		Pixiewps_Version="14"
                  fi
                  hash airmon-ng 2> /dev/null
                  Aircrack_Suite="$?"
@@ -922,7 +922,7 @@ Ver_Pckg_Tools() {
 				          Ver_libssl_dev=`dpkg -l | grep -w "libssl-dev"`
 						  if [ "$Ver_libssl_dev" = "" ] && [ "$Tools_Folder" != "" ]
 				               then
-				                    if [ "$Ver_Pixiewps" -ge "1" ] || [ "$Ver_Reaver" = "" ]
+				                    if [ "$Ver_Pixiewps" -ge "14" ] || [ "$Ver_Reaver" = "" ]
 				                    	then
 										    NOP="Libssl-dev"
 						                    if [ $Uname == 'i686' ]
@@ -940,7 +940,7 @@ Ver_Pckg_Tools() {
 				                    fi
 				          elif [ "$Ver_libssl_dev" = "" ]
 				          	  then
-				          	      if [ "$Ver_Pixiewps" -ge "1" ] || [ "$Ver_Reaver" = "" ]
+				          	      if [ "$Ver_Pixiewps" -ge "14" ] || [ "$Ver_Reaver" = "" ]
 				                    	then
 				          	                NOP="Libssl-dev"
 				          	                echo -ne "\r$white [${Red}wait${White}] $NOP not found ..."
@@ -948,22 +948,22 @@ Ver_Pckg_Tools() {
 				          	                sleep 1
 				          	      fi
 				          fi
-				          if [ "$Ver_Pixiewps" -ge "1" ] && [ "$Tools_Folder" != "" ] || [ "$Pixiewps_Version" -lt "12" ] && [ "$Tools_Folder" != "" ]
+				          if [ "$Ver_Pixiewps" -ge "14" ] && [ "$Tools_Folder" != "" ] || [ "$Pixiewps_Version" -lt "14" ] && [ "$Tools_Folder" != "" ]
 				               then
 					                NOP="Pixiewps"
 						            if [ $Uname == 'i686' ]
 		                   	           then
-								           NOPI="pixiewps_1.2.2_i386.deb"
+								           NOPI="pixiewps_1.4.2-1_i386.deb"
 								           cd Tools/32bits
 						                   Installation
 						                   cd ../..
 						            else
-								           NOPI="pixiewps_1.2.2_amd64.deb"
+								           NOPI="pixiewps_1.4.2-1_amd64.deb"
 								           cd Tools/64bits
 								           Installation
 								           cd ../..
 				                    fi
-				          elif [ "$Ver_Pixiewps" -ge "1" ]
+				          elif [ "$Ver_Pixiewps" -ge "14" ]
 				               then
 				                   NOP="Pixiewps"
 				                   echo -ne "\r$white [${Red}wait${White}] $NOP not found ..."
@@ -1015,7 +1015,7 @@ Ver_Pckg_Tools() {
 				          	    sleep 1
 				          fi
 				 else
-				 	      if [ "$Ver_Pixiewps" -ge "1" ] && [ "$Tools_Folder" != "" ] || [ "$Pixiewps_Version" -lt "12" ] && [ "$Tools_Folder" != "" ]
+				 	      if [ "$Ver_Pixiewps" -ge "14" ] && [ "$Tools_Folder" != "" ] || [ "$Pixiewps_Version" -lt "14" ] && [ "$Tools_Folder" != "" ]
 				               then
 						           Wait_Msg="Wait until the${Green} Pixiewps${white} is${Red} installed${White} ."
 						           End_Msg="Installation of$Green Pixiewps$White is done ."
@@ -1024,14 +1024,14 @@ Ver_Pckg_Tools() {
 					               PID="$!"
 					               disown $PID
 					               sleep 2.0
-						           cd pixiewps-master/src
+						           cd pixiewps-master/
 						           make > /dev/null 2> /dev/null && make install > /dev/null 2> /dev/null &
 						           PID="$!"
 						           Loading
 						           cd ../..
 						           rm -rf pixiewps-master
 						           cd ..
-						  elif [ "$Ver_Pixiewps" -ge "1" ]
+						  elif [ "$Ver_Pixiewps" -ge "14" ]
 						  	   then
 						  	       NOP="Pixiewps"
 				                   echo -ne "\r$white [${Red}wait${White}] $NOP not found ..."
